@@ -58,3 +58,30 @@ clustersize = []
 for cluster in range(k):
     clustersize.append(int(sum(km.labels_==cluster)))
 print(clustersize)
+
+#attach cluster labels back to countries
+df["cluster"] = km.labels_
+
+#list which countries fall in each cluster
+for cluster in range(k):
+    countries_in_cluster = df.index[df["cluster"] == cluster].tolist()
+    print(f"Cluster {cluster} ({len(countries_in_cluster)} countries): {countries_in_cluster}")
+
+#profile: mean hours per subcategory, per cluster
+cluster_profiles = df.groupby("cluster")[subcats].mean()
+
+#deviation from global average, to highlight what's different about each cluster
+global_avg = df[subcats].mean()
+cluster_deviation = cluster_profiles - global_avg
+
+# print("\nCluster profiles (mean hours/day per subcategory):")
+# print(cluster_profiles.round(2))
+
+# print("\nCluster deviation from global average:")
+# print(cluster_deviation.round(2))
+
+# #for each cluster, print its top 3 over and under-represented subcategories
+# for cluster in range(k):
+#     row = cluster_deviation.loc[cluster].sort_values(ascending=False)
+#     print(f"\nCluster {cluster} — spends MORE time than average on: {row.head(3).index.tolist()}")
+#     print(f"Cluster {cluster} — spends LESS time than average on: {row.tail(3).index.tolist()}")
